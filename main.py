@@ -127,7 +127,7 @@ def main():
 
     # Prepend the header text
     header_text = """'''Warning: Everything below has been programmatically generated - any changes made will be lost on the next update!'''
-
+If you would like to generate this file please use the github repo found [https://github.com/CalvyPZ/PZ-scripts-to-item-tag here].
 All item names have been modified for readability and linkability.
 
 Project Zomboid uses tags to define what can and cant be used for specific recipes. The following table shows what items count towards a specific tag.
