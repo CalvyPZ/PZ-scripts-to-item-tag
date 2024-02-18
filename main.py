@@ -102,11 +102,10 @@ def csv_to_wikitable(input_csv_path):
 
     for row in tag_items_sorted:
         tag = row[0]
-        # Use <span> for tags instead of [[]]
-        tag_span = f'<span id="{tag}">{tag}</span>'
+        # Modify the tag formatting as per the new requirement
+        tag_formatted = f'<span id="tag-{tag}">[[#{tag}|{tag}]]</span>'
         items = ']], [['.join(row[1:])
-        # Adjust items to be wrapped in <span> as well, if needed
-        table_str += f'|-\n| {tag_span} || [[{items}]]\n'
+        table_str += f'|-\n| {tag_formatted} || [[{items}]]\n'
     table_str += '|}'
     return table_str
 
