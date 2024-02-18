@@ -102,8 +102,11 @@ def csv_to_wikitable(input_csv_path):
 
     for row in tag_items_sorted:
         tag = row[0]
+        # Use <span> for tags instead of [[]]
+        tag_span = f'<span id="{tag}">{tag}</span>'
         items = ']], [['.join(row[1:])
-        table_str += f'|-\n| [[{tag}]] || [[{items}]]\n'
+        # Adjust items to be wrapped in <span> as well, if needed
+        table_str += f'|-\n| {tag_span} || [[{items}]]\n'
     table_str += '|}'
     return table_str
 
@@ -127,8 +130,7 @@ def main():
 
 All item names have been modified for readability and linkability.
 
-Project Zomboid uses tags to define what can and can't be used for specific recipes. The following table shows what items count towards a specific tag. 
-To find a specific item or tag, please use the search function of your browser.
+Project Zomboid uses tags to define what can and cant be used for specific recipes. The following table shows what items count towards a specific tag.
 
 ==Tags==
 """
