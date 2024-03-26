@@ -7,7 +7,7 @@ Automatically convert the entire scripts folder into its tags, then output a pag
 2. Find the `scripts` folder in your Project Zomboid install, and copy the folder to the `resources` folder.
 3. Download the appropriate `ItemName_XX.txt` from [this git.](https://github.com/TheIndieStone/ProjectZomboidTranslations/)
 4. Rename the translation file to `translate.txt` place it into the `resources` folder.
-3. Run `main.py` and the results will be output to `output/completed_output.txt`. You now have an updated version of the items spawned by various room definitions, formatted for the Project Zomboid wiki!
+3. Run `main.py` and the results will be output to `output/completed_output.txt`.
     
 **NOTICE FOR THOSE SUBMITTING MERGE REQUESTS: DO NOT INCLUDE LUA FILES FROM PROJECT ZOMBOID!**
 

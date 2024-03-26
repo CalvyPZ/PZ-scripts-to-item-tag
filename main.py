@@ -36,6 +36,37 @@ def find_tags_and_items(directory):
 
     return tag_items
 
+def find_food_types(directory):
+    food_type_items = {}  # Dictionary to store food types and their associated items
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+
+            for i, line in enumerate(lines):
+                if line.strip().startswith('/*') or line.strip().endswith('*/'):
+                    continue  # Skip comment lines
+                if "FoodType =" in line:
+                    food_type_part = line.split('FoodType =')[1].strip().rstrip(',')
+                    food_type = food_type_part.strip()
+                    # Find the associated item
+                    item_name = None
+                    for j in range(i, -1, -1):  # Scan upwards to find "item"
+                        if lines[j].strip().startswith("item"):
+                            item_name = lines[j].split()[1]  # Assume "item name"
+                            break
+                    if item_name and food_type:
+                        if food_type not in food_type_items:
+                            food_type_items[food_type] = set()
+                        food_type_items[food_type].add(item_name)
+
+    # Convert sets to sorted lists
+    for food_type in food_type_items:
+        food_type_items[food_type] = sorted(food_type_items[food_type])
+
+    return food_type_items
+
 
 def write_associations_to_csv(tag_items, output_path):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)  # Ensure the output directory exists
@@ -111,34 +142,56 @@ def csv_to_wikitable(input_csv_path):
 
 
 def main():
+    # Define file paths
     scripts_directory = 'resources/scripts'
-    output_file = 'output/associated_tags.csv'
-    wiki_table_file = 'output/completed_output.txt'  # Changed to the final output file name
+    output_file_tags = 'output/associated_tags.csv'
+    output_file_food_types = 'output/FoodType.csv'  # Output file for food types CSV
+    wiki_table_file_tags = 'output/completed_output_tags.txt'  # Final output file name for tags
+    wiki_table_file_food_types = 'output/completed_output_food_types.txt'  # Final output file name for food types
     translation_file = 'resources/translate.txt'
 
+    # Load translations
     translations = load_translations(translation_file)
+
+    # --- Process Tags ---
     tag_items = find_tags_and_items(scripts_directory)
     translated_tag_items = translate_item_names(tag_items, translations)
-    write_associations_to_csv(translated_tag_items, output_file)
+    write_associations_to_csv(translated_tag_items, output_file_tags)
 
-    # Generate the wiki table string
-    wiki_table_str = csv_to_wikitable(output_file)
-
-    # Prepend the header text
-    header_text = """'''Warning: Everything below has been programmatically generated - any changes made will be lost on the next update!'''
+    # Generate the wiki table string for tags and write to the output file
+    wiki_table_str_tags = csv_to_wikitable(output_file_tags)
+    header_text_tags = """'''Warning: Everything below has been programmatically generated - any changes made will be lost on the next update!'''
 If you would like to generate this file please use the github repo found [https://github.com/CalvyPZ/PZ-scripts-to-item-tag here].
 All item names have been modified for readability and linkability.
 
-Project Zomboid uses tags to define what can and cant be used for specific recipes. The following table shows what items count towards a specific tag.
+Project Zomboid uses tags to define what can and can't be used for specific recipes. The following table shows what items count towards a specific tag.
 
 ==Tags==
 """
-    # Write the header and the table to the final output file
-    with open(wiki_table_file, 'w', encoding='utf-8') as f:
-        f.write(header_text + wiki_table_str)
+    with open(wiki_table_file_tags, 'w', encoding='utf-8') as f:
+        f.write(header_text_tags + wiki_table_str_tags)
+    print(f"Completed output with sorted tags and header has been written to {wiki_table_file_tags}")
 
-    print(f"Completed output with sorted tags and header has been written to {wiki_table_file}")
+    # --- Process Food Types ---
+    food_types = find_food_types(scripts_directory)
+    translated_food_types = translate_item_names(food_types, translations)
+    write_associations_to_csv(translated_food_types, output_file_food_types)
 
+    # Generate the wiki table string for food types and write to the output file
+    wiki_table_str_food_types = csv_to_wikitable(output_file_food_types)
+    header_text_food_types = """'''Warning: Everything below has been programmatically generated - any changes made will be lost on the next update!'''
+If you would like to generate this file please use the github repo found [https://github.com/CalvyPZ/PZ-scripts-to-item-tag here].
+All item names have been modified for readability and linkability.
+
+Project Zomboid uses food types to define food items. The following table shows the food types assigned to specific items.
+
+==Food Types==
+"""
+    with open(wiki_table_file_food_types, 'w', encoding='utf-8') as f:
+        f.write(header_text_food_types + wiki_table_str_food_types)
+
+
+    print(f"Completed output with sorted food types and header has been written to {wiki_table_file_food_types}")
 
 if __name__ == "__main__":
     main()
